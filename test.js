@@ -12,21 +12,27 @@ function render(byteArray) {
 
 const EXPECTATIONS = new Map([
   [0n, [0b000]],
+  [-1n, [0b001]],
   [1n, [0b010]],
-  [-1n, [0b011]],
+  [-2n, [0b011]],
   [2n, [0b100]],
-  [-2n, [0b101]],
+  [-3n, [0b101]],
   [3n, [0b110]],
-  [-3n, [0b111]],
 
+  [-63n, [0x7D]],
   [63n, [0x7E]],
-  [-63n, [0x7F]],
+  [-64n, [0x7F]],
   [64n, [0x80, 0x00]],
-  [-64n, [0x81, 0x00]],
+  [-65n, [0x81, 0x00]],
   [65n, [0x82, 0x00]],
 
+  [-126n, [0xFB, 0x00]],
+  [126n, [0xFC, 0x00]],
+  [-127n, [0xFD, 0x00]],
   [127n, [0xFE, 0x00]],
+  [-128n, [0xFF, 0x00]],
   [128n, [0x80, 0x01]],
+  [-129n, [0x81, 0x01]],
   [129n, [0x82, 0x01]],
 
   [137n, [0x92, 0x01]],
@@ -112,4 +118,53 @@ for (let i = 0; i < 1e3; ++i) {
   let n = BigInt(Math.floor(Math.random() * Math.pow(2, 53)));
   assertRoundTrip(n);
   assertRoundTrip(-n);
+}
+
+function* byteArraysOfLength(length) {
+  let arr = new Array(length).fill(0x80);
+  arr[length - 1] = 0x00;
+
+  next: while (true) {
+    yield arr;
+    for (let position = 0; position < length - 1; ++position) {
+      if (arr[position] < 0xFF) {
+        ++arr[position];
+        continue next;
+      } else {
+        arr[position] = 0x80;
+      }
+    }
+    let position = length - 1;
+    if (arr[position] < 0x7F) {
+      ++arr[position];
+      continue next;
+    }
+    break;
+  }
+}
+
+console.log('decoding coverage');
+{
+  let min = 0n;
+  let max = 0n;
+  let seen = new Map;
+
+  for (let length = 1; length < 4; ++length) {
+    for (let byteArray of byteArraysOfLength(length)) {
+      assertSanity(byteArray);
+      let decoded = varintBigint.decode(byteArray);
+      if (decoded < min) {
+        min = decoded;
+      }
+      if (decoded > max) {
+        max = decoded;
+      }
+      assert.ok(!seen.has(decoded), `multiple representations for ${decoded}: ${render(byteArray)} and ${render(seen.get(decoded))}`);
+      seen.set(decoded, byteArray);
+    }
+  }
+
+  for (let i = min + 1n; i < max; ++i) {
+    assert.ok(seen.has(i), `no representation for ${i}`);
+  }
 }

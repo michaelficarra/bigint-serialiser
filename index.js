@@ -13,6 +13,7 @@ function encodeInto(value, byteArray, offset = 0) {
 
   if (value < 0) {
     value = -value;
+    --value;
     value <<= 1n;
     value |= 1n;
   } else {
@@ -50,6 +51,7 @@ function decodeWithOffset(byteArray, startingOffset = 0) {
 
   if ((value & 1n) === 1n) {
     value >>= 1n;
+    ++value;
     value = -value;
   } else {
     value >>= 1n;
