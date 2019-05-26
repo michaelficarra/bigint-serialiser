@@ -1,0 +1,19 @@
+{
+  "name": "varint-bigint",
+  "version": "1.0.0",
+  "description": "convert between bigints and the varint binary encoding",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "bigint",
+    "varint"
+  ],
+  "author": "Michael Ficarra",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "varint": "5.0.0"
+  },
+  "engines" : { "node" : ">=10.4.0" }
+}
