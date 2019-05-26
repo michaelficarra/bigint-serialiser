@@ -22,6 +22,7 @@ function encodeInto(value, byteArray, offset = 0) {
   while (value >= CONTINUE) {
     byteArray[offset] = Number((value & REST_MASK) | CONTINUE);
     value >>= SIGNIFICANT_BITS;
+    --value;
     ++offset;
   }
 
@@ -36,16 +37,15 @@ function decode(byteArray, offset = 0) {
 
 function decodeWithOffset(byteArray, startingOffset = 0) {
   let finalOffset = startingOffset;
-  while (finalOffset < byteArray.length && (byteArray[finalOffset] & 0x80) === 0x80) {
+  while (finalOffset < byteArray.length - 1 && (byteArray[finalOffset] & 0x80) === 0x80) {
     ++finalOffset;
   }
-  ++finalOffset;
 
-  let value = 0n;
-  for (let offset = finalOffset - 1; offset >= startingOffset; --offset) {
-    let b = BigInt(byteArray[offset]);
+  let value = -1n;
+  for (let offset = finalOffset; offset >= startingOffset; --offset) {
+    ++value;
     value <<= SIGNIFICANT_BITS;
-    value |= b & REST_MASK;
+    value |= BigInt(byteArray[offset]) & REST_MASK;
   }
 
   if ((value & 1n) === 1n) {
@@ -57,7 +57,7 @@ function decodeWithOffset(byteArray, startingOffset = 0) {
 
   return {
     value,
-    finalOffset,
+    followingOffset: finalOffset + 1,
   };
 }
 

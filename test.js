@@ -11,13 +11,19 @@ function render(byteArray) {
 }
 
 const EXPECTATIONS = new Map([
-  // [0n, [0b000]],
-  // [1n, [0b010]],
-  // [-1n, [0b011]],
-  // [2n, [0b100]],
-  // [-2n, [0b101]],
-  // [3n, [0b110]],
-  // [-3n, [0b111]],
+  [0n, [0b000]],
+  [1n, [0b010]],
+  [-1n, [0b011]],
+  [2n, [0b100]],
+  [-2n, [0b101]],
+  [3n, [0b110]],
+  [-3n, [0b111]],
+
+  [63n, [0x7E]],
+  [-63n, [0x7F]],
+  [64n, [0x80, 0x00]],
+  [-64n, [0x81, 0x00]],
+  [65n, [0x82, 0x00]],
 
   // [127n, [0x7F]],
   // [128n, [0x80, 0x01]],
@@ -104,12 +110,4 @@ for (let i = 0; i < 1e3; ++i) {
   let n = BigInt(Math.floor(Math.random() * Math.pow(2, 53)));
   assertRoundTrip(n);
   assertRoundTrip(-n);
-}
-
-console.log('test');
-{
-  let encoded = [0x02, 0x80, 0x80];
-  let actual = varintBigint.decode(encoded);
-  assert.strictEqual(typeof actual, 'bigint');
-  console.log(actual);
 }
