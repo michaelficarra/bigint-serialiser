@@ -52,6 +52,7 @@ function assertSanity(byteArray) {
   assert.strictEqual(byteArray[byteArray.length - 1] & 0x80, 0, `highest bit sanity (offset 0): ${render(byteArray)}`);
 }
 
+console.log('fixed bidirectional expectations');
 for (let [n, byteArray] of EXPECTATIONS) {
   assert.strictEqual(typeof n, 'bigint');
   assertSanity(byteArray);
@@ -81,19 +82,31 @@ function assertRoundTrip(n) {
   assert.strictEqual(actual, n, `round-trip ${n}: encoded as ${render(encoded)}, decoded as ${actual}`);
 }
 
-let step = 0n;
-for (let n = 0n; n < BigInt(1e6); n += step) {
+console.log('small numbers');
+for (let n = 0n; n < BigInt(1e5); ++n) {
   assertRoundTrip(n);
   assertRoundTrip(-n);
-  ++step;
 }
 
-for (let i = 0; i < 1e6; ++i) {
+console.log('big numbers');
+{
+  let n = 1n;
+  let last = 0n;
+  for (let i = 1; i < 500; ++i) {
+    assertRoundTrip(n);
+    assertRoundTrip(-n);
+    [last, n] = [n, n + last];
+  }
+}
+
+console.log('random numbers');
+for (let i = 0; i < 1e3; ++i) {
   let n = BigInt(Math.floor(Math.random() * Math.pow(2, 53)));
   assertRoundTrip(n);
   assertRoundTrip(-n);
 }
 
+console.log('test');
 {
   let encoded = [0x02, 0x80, 0x80];
   let actual = varintBigint.decode(encoded);

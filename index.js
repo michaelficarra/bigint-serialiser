@@ -34,18 +34,18 @@ function decode(byteArray, offset = 0) {
   return decodeWithOffset(byteArray, offset).value;
 }
 
-function decodeWithOffset(byteArray, offset = 0) {
-  let value = 0n;
-  let shift = 0n;
-  let negative = false;
+function decodeWithOffset(byteArray, startingOffset = 0) {
+  let finalOffset = startingOffset;
+  while (finalOffset < byteArray.length && (byteArray[finalOffset] & 0x80) === 0x80) {
+    ++finalOffset;
+  }
+  ++finalOffset;
 
-  while (offset < byteArray.length) {
+  let value = 0n;
+  for (let offset = finalOffset - 1; offset >= startingOffset; --offset) {
     let b = BigInt(byteArray[offset]);
-    ++offset;
-    if (b === 0n) break;
-    value |= (b & REST_MASK) << shift;
-    if ((b & CONTINUE) !== CONTINUE) break;
-    shift += SIGNIFICANT_BITS;
+    value <<= SIGNIFICANT_BITS;
+    value |= b & REST_MASK;
   }
 
   if ((value & 1n) === 1n) {
@@ -57,7 +57,7 @@ function decodeWithOffset(byteArray, offset = 0) {
 
   return {
     value,
-    offset,
+    finalOffset,
   };
 }
 
