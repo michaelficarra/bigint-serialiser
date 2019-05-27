@@ -67,4 +67,5 @@ module.exports = {
   encode,
   encodeInto,
   decode,
+  decodeWithOffset,
 };
