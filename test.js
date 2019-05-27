@@ -128,7 +128,7 @@ test('snapshots', t => {
     assertRoundTrip(t, n);
     assertRoundTrip(t, -n);
   }
-  t.snapshot(new Map(SNAPSHOTS.flatMap(n => [[n, encode(n)], [-n, encode(-n)]])));
+  t.snapshot(new Map([].concat.apply([], SNAPSHOTS.map(n => [[n, encode(n)], [-n, encode(-n)]]))));
 });
 
 test('small numbers', t => {
