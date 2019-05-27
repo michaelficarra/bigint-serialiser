@@ -1,6 +1,6 @@
 {
   "name": "varint-bigint",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "convert between bigints and the varint binary encoding",
   "main": "index.js",
   "files": [
