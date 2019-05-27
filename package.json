@@ -4,7 +4,7 @@
   "description": "convert between bigints and the varint binary encoding",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "ava --fail-fast --verbose"
   },
   "keywords": [
     "bigint",
@@ -12,8 +12,22 @@
   ],
   "author": "Michael Ficarra",
   "license": "Apache-2.0",
-  "dependencies": {
-    "varint": "5.0.0"
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "7.0.0",
+    "@babel/plugin-syntax-bigint": "7.4.4",
+    "ava": "1.4.1"
   },
-  "engines" : { "node" : ">=10.4.0" }
+  "engines": {
+    "node": ">=10.4.0"
+  },
+  "ava": {
+    "babel": {
+      "testOptions": {
+        "plugins": [
+          "@babel/plugin-syntax-bigint"
+        ]
+      }
+    }
+  }
 }
