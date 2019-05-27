@@ -7,7 +7,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "ava --fail-fast --verbose"
+    "test": "nyc ava --fail-fast --verbose"
   },
   "keywords": [
     "bigint",
@@ -19,7 +19,8 @@
   "devDependencies": {
     "@babel/core": "7.0.0",
     "@babel/plugin-syntax-bigint": "7.4.4",
-    "ava": "1.4.1"
+    "ava": "1.4.1",
+    "nyc": "14.1.1"
   },
   "engines": {
     "node": ">=10.4.0"
@@ -32,5 +33,16 @@
         ]
       }
     }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100,
+    "reporter": ["text", "lcov"],
+    "skip-full": true,
+    "skip-empty": true,
+    "per-file": true
   }
 }
