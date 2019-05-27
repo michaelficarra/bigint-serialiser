@@ -1,5 +1,5 @@
 import test from 'ava';
-import { encode, decode } from './index.js';
+import { encode, decode, encodeInto, decodeWithOffset } from './index.js';
 
 function render(byteArray) {
   if (byteArray != null && Symbol.iterator in byteArray) {
@@ -179,4 +179,27 @@ test('decoding coverage', t => {
   for (let i = min + 1n; i < max; ++i) {
     t.true(seen.has(i), `no representation for ${i}`);
   }
+});
+
+test('decode with offset', t => {
+  let byteArray = [0x80, 0x80, 0x80, 0x80, 0x00, 0x80, 0x80, 0x00];
+  t.deepEqual({ value: 135274560n, followingOffset: 5 }, decodeWithOffset(byteArray));
+
+  t.deepEqual({ value: 135274560n, followingOffset: 5 }, decodeWithOffset(byteArray, 0));
+  t.deepEqual({ value: 1056832n, followingOffset: 5 }, decodeWithOffset(byteArray, 1));
+  t.deepEqual({ value: 8256n, followingOffset: 5 }, decodeWithOffset(byteArray, 2));
+  t.deepEqual({ value: 64n, followingOffset: 5 }, decodeWithOffset(byteArray, 3));
+  t.deepEqual({ value: 0n, followingOffset: 5 }, decodeWithOffset(byteArray, 4));
+  t.deepEqual({ value: 8256n, followingOffset: 8 }, decodeWithOffset(byteArray, 5));
+  t.deepEqual({ value: 64n, followingOffset: 8 }, decodeWithOffset(byteArray, 6));
+  t.deepEqual({ value: 0n, followingOffset: 8 }, decodeWithOffset(byteArray, 7));
+
+  t.is(135274560n, decode(byteArray, 0));
+  t.is(1056832n, decode(byteArray, 1));
+  t.is(8256n, decode(byteArray, 2));
+  t.is(64n, decode(byteArray, 3));
+  t.is(0n, decode(byteArray, 4));
+  t.is(8256n, decode(byteArray, 5));
+  t.is(64n, decode(byteArray, 6));
+  t.is(0n, decode(byteArray, 7));
 });
