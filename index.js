@@ -3,8 +3,8 @@ const SIGNIFICANT_BITS = 7n,
   REST_MASK = CONTINUE - 1n;
 
 function encode(value) {
-  let out = [];
-  encodeInto(value, out);
+  let out = { length: Infinity };
+  out.length = encodeInto(value, out);
   return Uint8Array.from(out);
 }
 
@@ -20,14 +20,17 @@ function encodeInto(value, byteArray, offset = 0) {
     value <<= 1n;
   }
 
-  while (value >= CONTINUE) {
+  while (value >= CONTINUE && offset < byteArray.length) {
     byteArray[offset] = Number((value & REST_MASK) | CONTINUE);
     value >>= SIGNIFICANT_BITS;
     --value;
     ++offset;
   }
 
-  byteArray[offset] = Number(value);
+  if (offset < byteArray.length) {
+    byteArray[offset] = Number(value);
+    ++offset;
+  }
 
   return offset;
 }

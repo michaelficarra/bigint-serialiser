@@ -181,6 +181,28 @@ test('decoding coverage', t => {
   }
 });
 
+test('encodeInto', t => {
+  let byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.is(1, encodeInto(1n, byteArray));
+  t.deepEqual([0x02, 0x00, 0x00, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.is(1, encodeInto(1n, byteArray, 0));
+  t.deepEqual([0x02, 0x00, 0x00, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.is(2, encodeInto(1n, byteArray, 1));
+  t.deepEqual([0x00, 0x02, 0x00, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.is(3, encodeInto(300n, byteArray, 1));
+  t.deepEqual([0x00, 0xD8, 0x03, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.is(4, encodeInto(9999999n, byteArray, 2));
+  t.deepEqual([0x00, 0x00, 0xFE, 0xD8], byteArray);
+});
+
 test('decode with offset', t => {
   let byteArray = [0x80, 0x80, 0x80, 0x80, 0x00, 0x80, 0x80, 0x00];
   t.deepEqual({ value: 135274560n, followingOffset: 5 }, decodeWithOffset(byteArray));
