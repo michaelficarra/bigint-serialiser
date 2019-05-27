@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "convert between bigints and the varint binary encoding",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "ava --fail-fast --verbose"
   },
