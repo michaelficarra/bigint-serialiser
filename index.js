@@ -27,10 +27,12 @@ function encodeInto(value, byteArray, offset = 0) {
     ++offset;
   }
 
-  if (offset < byteArray.length) {
-    byteArray[offset] = Number(value);
-    ++offset;
+  if (offset >= byteArray.length) {
+    throw new Error('insufficient space');
   }
+
+  byteArray[offset] = Number(value);
+  ++offset;
 
   return offset;
 }

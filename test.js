@@ -194,12 +194,28 @@ test('encodeInto', t => {
   t.is(2, encodeInto(1n, byteArray, 1));
   t.deepEqual([0x00, 0x02, 0x00, 0x00], byteArray);
 
+  byteArray = [0xFF, 0xFF, 0xFF, 0xFF];
+  t.is(3, encodeInto(64n, byteArray, 1));
+  t.deepEqual([0xFF, 0x80, 0x00, 0xFF], byteArray);
+
   byteArray = [0x00, 0x00, 0x00, 0x00];
   t.is(3, encodeInto(300n, byteArray, 1));
   t.deepEqual([0x00, 0xD8, 0x03, 0x00], byteArray);
 
   byteArray = [0x00, 0x00, 0x00, 0x00];
-  t.is(4, encodeInto(9999999n, byteArray, 2));
+  t.throws(() => encodeInto(1n, byteArray, 4));
+  t.deepEqual([0x00, 0x00, 0x00, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.throws(() => encodeInto(0n, byteArray, 4));
+  t.deepEqual([0x00, 0x00, 0x00, 0x00], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.throws(() => encodeInto(8256n, byteArray, 2));
+  t.deepEqual([0x00, 0x00, 0x80, 0x80], byteArray);
+
+  byteArray = [0x00, 0x00, 0x00, 0x00];
+  t.throws(() => encodeInto(9999999n, byteArray, 2));
   t.deepEqual([0x00, 0x00, 0xFE, 0xD8], byteArray);
 });
 
