@@ -1,6 +1,6 @@
 {
   "name": "bigint-serialiser",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "a transcoder for serialising JavaScript BigInt values to a Uint8Array or any other array-like object",
   "main": "index.js",
   "files": [
