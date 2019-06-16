@@ -59,7 +59,7 @@ decode(bytes, 1); // -2n
 decode(bytes, 2); // 0n
 ```
 
-### `decodeWithOffset(byteArray: Uint8Array, startingOffset: ?number): { value: bigint, followingOffset: number }
+### `decodeWithOffset(byteArray: Uint8Array, startingOffset: ?number): { value: bigint, followingOffset: number }`
 
 `decodeWithOffset` reads a bigint value from an array-like `byteArray`,
 starting from an optional `startingOffset`. If `startingOffset` is not given,
