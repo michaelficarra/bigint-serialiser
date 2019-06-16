@@ -1,7 +1,7 @@
 {
-  "name": "varint-bigint",
+  "name": "bigint-serialiser",
   "version": "0.0.1",
-  "description": "convert between bigints and the varint binary encoding",
+  "description": "a transcoder for serialising JavaScript BigInt values to a Uint8Array or any other array-like object",
   "main": "index.js",
   "files": [
     "index.js"
@@ -11,7 +11,17 @@
   },
   "keywords": [
     "bigint",
-    "varint"
+    "serialiser",
+    "transcoder",
+    "encoder",
+    "decoder",
+    "varint",
+    "vlq",
+    "arraybuffer",
+    "dataview",
+    "byte array",
+    "bytes",
+    "bytebuffer"
   ],
   "author": "Michael Ficarra",
   "license": "Apache-2.0",

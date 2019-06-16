@@ -1,10 +1,10 @@
-varint-bigint
+bigint-serialiser
 =============
 
 ## About
 
 This module provides a transcoder for serialising JavaScript BigInt values to a
-`Uint8Array` or, optionally, any other array-like object.
+`Uint8Array` or any other array-like object.
 
 Bytes are stored in little-endian order, with the first bit of each byte
 indicating whether the bytes that follow it are a continuation of the encoding.
@@ -16,7 +16,7 @@ set. The sign bit is at the end of the first byte.
 ## Installation
 
 ```sh
-npm install varint-bigint
+npm install bigint-serialiser
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ npm install varint-bigint
 `encode` takes a bigint and returns a Uint8Array containing the encoded bytes.
 
 ```js
-let { encode } = require('varint-bigint');
+let { encode } = require('bigint-serialiser');
 let bytes = encode(300n);
 ```
 
@@ -40,7 +40,7 @@ past the end of `byteArray`, `encodeInto` will throw after partially writing
 the encoding of `value` to `byteArray`.
 
 ```js
-let { encodeInto } = require('varint-bigint');
+let { encodeInto } = require('bigint-serialiser');
 let bytes = new Uint8Array(5); // [ 0, 0, 0, 0, 0 ]
 let followingOffset = encodeInto(300n, bytes, 2); // 4
 bytes; // [ 0, 0, 216, 3, 0 ]
@@ -52,7 +52,7 @@ bytes; // [ 0, 0, 216, 3, 0 ]
 optional `offset`. If `offset` is not given, `0` is used for the offset.
 
 ```js
-let { decode } = require('varint-bigint');
+let { decode } = require('bigint-serialiser');
 let bytes = Uint8Array.of(216, 3, 0);
 decode(bytes); // 300n
 decode(bytes, 1); // -2n
@@ -68,7 +68,7 @@ bigint in its `value` field and the offset following the last byte read in its
 `followingOffset` field.
 
 ```js
-let { decodeWithOffset } = require('varint-bigint');
+let { decodeWithOffset } = require('bigint-serialiser');
 let bytes = Uint8Array.of(216, 3, 0);
 decodeWithOffset(bytes); // { value: 300n, followingOffset: 2 }
 ```
