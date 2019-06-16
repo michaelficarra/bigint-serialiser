@@ -11,7 +11,7 @@ indicating whether the bytes that follow it are a continuation of the encoding.
 Negative numbers are stored as one less than their magnitude, with the sign bit
 set. The sign bit is at the end of the first byte.
 
-![example.png]()
+![encoding samples](example.png)
 
 ## Installation
 
