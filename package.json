@@ -25,6 +25,7 @@
   ],
   "author": "Michael Ficarra",
   "license": "Apache-2.0",
+  "repository": "github:michaelficarra/bigint-serialiser",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "7.0.0",
