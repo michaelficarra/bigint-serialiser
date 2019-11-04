@@ -2,16 +2,33 @@ const SIGNIFICANT_BITS = 7n,
   CONTINUE = 1n << SIGNIFICANT_BITS,
   REST_MASK = CONTINUE - 1n;
 
-function encode(value) {
+const DEFAULT_OPTIONS = {
+  startingWidth: 2,
+  maximumWidth: 8,
+  growthFunction: x => x + 2,
+}
+
+const OLD_DEFAULT_OPTIONS = {
+  startingWidth: 1,
+  maximumWidth: 1,
+  growthFunction: x => x,
+}
+
+function encode(value, options) {
   let out = { length: Infinity };
-  out.length = encodeInto(value, out);
+  out.length = encodeInto(value, out, 0, options);
   return Uint8Array.from(out);
 }
 
-function encodeInto(value, byteArray, offset = 0) {
+function encodeInto(value, outArray, offset = 0, options = OLD_DEFAULT_OPTIONS) {
+  if (options.startingWidth < 1) {
+    throw new Error('invalid starting width');
+  }
+  let currentWidth = options.startingWidth;
+
   value = BigInt(value);
 
-  if (value < 0) {
+  if (value < 0n) {
     value = -value;
     --value;
     value <<= 1n;
@@ -20,30 +37,45 @@ function encodeInto(value, byteArray, offset = 0) {
     value <<= 1n;
   }
 
-  while (value >= CONTINUE && offset < byteArray.length) {
-    byteArray[offset] = Number((value & REST_MASK) | CONTINUE);
-    value >>= SIGNIFICANT_BITS;
+  do {
+    for (let innerOffset = currentWidth; innerOffset > 1; --innerOffset) {
+      if (offset >= outArray.length) {
+        throw new Error('insufficient space');
+      }
+
+      outArray[offset] = Number(value & 0xFFn);
+      value >>= 8n;
+      ++offset;
+    }
+
+    if (offset >= outArray.length) {
+      throw new Error('insufficient space');
+    }
+
+    let continueBit = value > 0x7Fn ? 0x80n : 0n;
+    outArray[offset] = Number((value & 0x7Fn) | continueBit);
+    value >>= 7n;
     --value;
     ++offset;
-  }
 
-  if (offset >= byteArray.length) {
-    throw new Error('insufficient space');
-  }
-
-  byteArray[offset] = Number(value);
-  ++offset;
+    if (currentWidth < options.maximumWidth) {
+      currentWidth = Math.min(options.maximumWidth, options.growthFunction(currentWidth));
+      if (currentWidth < 1) {
+        throw new Error('invalid growth function');
+      }
+    }
+  } while (value >= 0n);
 
   return offset;
 }
 
-function decode(byteArray, offset = 0) {
-  return decodeWithOffset(byteArray, offset).value;
+function decode(outArray, offset = 0) {
+  return decodeWithOffset(outArray, offset).value;
 }
 
-function decodeWithOffset(byteArray, startingOffset = 0) {
+function decodeWithOffset(outArray, startingOffset = 0) {
   let finalOffset = startingOffset;
-  while (finalOffset < byteArray.length - 1 && (byteArray[finalOffset] & 0x80) === 0x80) {
+  while (finalOffset < outArray.length - 1 && (outArray[finalOffset] & 0x80) === 0x80) {
     ++finalOffset;
   }
 
@@ -51,7 +83,7 @@ function decodeWithOffset(byteArray, startingOffset = 0) {
   for (let offset = finalOffset; offset >= startingOffset; --offset) {
     ++value;
     value <<= SIGNIFICANT_BITS;
-    value |= BigInt(byteArray[offset]) & REST_MASK;
+    value |= BigInt(outArray[offset]) & REST_MASK;
   }
 
   if ((value & 1n) === 1n) {
